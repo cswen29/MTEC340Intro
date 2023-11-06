@@ -8,6 +8,7 @@ public class EnemyBehaviour : MonoBehaviour
     public float _maxHealth = 3.0f;
     public float _currentHealth;
     [SerializeField] float _enemyspeed = 5.0f;
+    public int points = 1; // Points awarded for killing this enemy
 
     Transform _target;
     Rigidbody2D _rb;
@@ -87,11 +88,7 @@ public class EnemyBehaviour : MonoBehaviour
         if (_currentHealth <= 0)
         {
             _enemySpawns.EnemyKilled();
-            //// Check if gameBehaviour is not null and the enemy killed is a mosquito
-            //if (gameBehaviour != null && gameObject.CompareTag("Enemy"))
-            //{
-            //    gameBehaviour.MosquitoKilled(); // Update mosquito kill count
-            //}
+            GameBehaviour.Instance.UpdateScore(points);
             Destroy(gameObject); // Destroy the enemy when health reaches zero
         }
     }

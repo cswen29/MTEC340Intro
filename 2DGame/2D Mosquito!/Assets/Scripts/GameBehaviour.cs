@@ -24,8 +24,8 @@ public class GameBehaviour : MonoBehaviour
     [SerializeField] TextMeshProUGUI _pauseMessage2;
 
     [SerializeField] TextMeshProUGUI _instructionsMessage;
-    //public int mosquitoKillCount = 0;
-    //public int level = 1;
+    public int score = 0;
+    public int level = 1;
 
 
     public void GameOver()
@@ -77,23 +77,18 @@ public class GameBehaviour : MonoBehaviour
         }
     }
 
-    //public void MosquitoKilled()
-    //{
-    //    mosquitoKillCount++;
+    public void UpdateScore(int points)
+    {
+        score += points;
+        UpdateLevel();
+    }
 
-    //    if (mosquitoKillCount % 5 == 0) // Every 5 mosquito kills
-    //    {
-    //        level++; // Increment the level
-    //        Debug.Log("Level Up! Current level: " + level);
-    //        UpdateLevelUI(); // Call a method to update the level UI
-    //    }
-    //}
-
-    //void UpdateLevelUI()
-    //{
-    //    if (LevelGUI != null) // Assuming LevelGUI is assigned in the Inspector
-    //    {
-    //        LevelGUI.text = "Level: " + level; // Update the TextMeshPro UI to display the level
-    //    }
-    //}
+    void UpdateLevel()
+    {
+        if (score % 5 == 0) // Increase level every 5 points
+        {
+            level++;
+            LevelGUI.text = ("Level:" + level); 
+        }
+    }
 }
