@@ -18,27 +18,15 @@ public class GameBehaviour : MonoBehaviour
 
     public State GameState;
 
-    //private float _timer;
-    //public float Timer
-    //{
-    //    get => _timer;
-    //    set
-    //    {
-    //        _timer = value;
-
-    //        int minutes = Mathf.FloorToInt(Timer / 60.0f);
-    //        int seconds = Mathf.FloorToInt(Timer % 60.0f);
-
-    //        TimerGUI.text = $"{minutes:00}:{seconds:00}";
-    //    }
-    //}
-
     [SerializeField] TextMeshProUGUI LevelGUI;
     [SerializeField] TextMeshProUGUI _pauseMessage;
     [SerializeField] TextMeshProUGUI _pauseMessage1;
     [SerializeField] TextMeshProUGUI _pauseMessage2;
 
     [SerializeField] TextMeshProUGUI _instructionsMessage;
+    //public int mosquitoKillCount = 0;
+    //public int level = 1;
+
 
     public void GameOver()
     {
@@ -88,4 +76,24 @@ public class GameBehaviour : MonoBehaviour
 
         }
     }
+
+    //public void MosquitoKilled()
+    //{
+    //    mosquitoKillCount++;
+
+    //    if (mosquitoKillCount % 5 == 0) // Every 5 mosquito kills
+    //    {
+    //        level++; // Increment the level
+    //        Debug.Log("Level Up! Current level: " + level);
+    //        UpdateLevelUI(); // Call a method to update the level UI
+    //    }
+    //}
+
+    //void UpdateLevelUI()
+    //{
+    //    if (LevelGUI != null) // Assuming LevelGUI is assigned in the Inspector
+    //    {
+    //        LevelGUI.text = "Level: " + level; // Update the TextMeshPro UI to display the level
+    //    }
+    //}
 }

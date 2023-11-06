@@ -175,3 +175,4 @@ MonoBehaviour:
   _maxHealth: 5
   _currentHealth: 0
   _enemyspeed: 0.5
+  gameBehaviour: {fileID: 0}

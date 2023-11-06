@@ -1,16 +1,22 @@
 using System.Collections;
 using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
 
 public class EnemySpawns : MonoBehaviour
 {
     [SerializeField] GameObject enemyPrefab;
     [SerializeField] float spawnpointY;
+    //[SerializeField] TextMeshProUGUI levelText;
+
 
     //private float timer;
     //private float maxTimer;
     private GameObject currentEnemy; // Reference to the current enemy
     private GameObject originalEnemyPrefab; // Reference to the original enemy
     private int enemiesKilled = 0;
+    private int enemiesToSpawn = 1;
+
 
     private void Start()
     {
@@ -22,31 +28,34 @@ public class EnemySpawns : MonoBehaviour
 
     void SpawnEnemy()
     {
+        if (enemiesKilled >= enemiesToSpawn)
+        {
+            enemiesToSpawn *= 2;
+            enemiesKilled = 0;
+        }
+
         float y = spawnpointY;
         Vector3 spawnPoint = Camera.main.ViewportToWorldPoint(new Vector3(Random.Range(0, 1f), y, 0));
         spawnPoint.z = 0;
 
-        //currentEnemy = Instantiate(enemyPrefab, spawnPoint, Quaternion.identity);
-        // Spawn two enemies each time one is killed
-        InstantiateEnemy(spawnPoint);
-        InstantiateEnemy(spawnPoint);
+        for (int i = 0; i < enemiesToSpawn; i++)
+        {
+            InstantiateEnemy(spawnPoint);
+        }
+
     }
 
 
     IEnumerator SpawnEnemyTimer()
     {
-        while (true) // Ensures this keeps running
+        while (true)
         {
-            if (GameBehaviour.Instance.GameState == GameBehaviour.State.Play)
-            {
-                //if (currentEnemy == null)
-                //{
-                    SpawnEnemy();
-                //}
-            }
-
-            yield return new WaitForSeconds(1.0f); // Adjust the interval if needed
+            yield return new WaitUntil(() => GameBehaviour.Instance.GameState == GameBehaviour.State.Play && currentEnemy == null);
+            SpawnEnemy();
         }
+
+            //yield return new WaitForSeconds(1.0f); // Adjust the interval if needed
+        
         //if (timer >= maxTimer)
         //{
         //    SpawnEnemy();
@@ -72,13 +81,30 @@ public class EnemySpawns : MonoBehaviour
     public void EnemyKilled()
     {
         enemiesKilled++;
-        if (enemiesKilled % 2 == 0) // When 2 enemies are killed, spawn two new enemies
-        {
-            enemiesKilled = 0; // Reset the count
-            StartCoroutine(SpawnEnemyTimer());
-        }
-    }
+        //if (enemiesKilled % 5 == 0)
+        //{
+        //    // Increment the level indicator every 5 enemies killed
+        //    int level = enemiesKilled / 5; // Assuming each 5 kills increases level by 1
+        //    UpdateLevelUI(level);
+        //}
 
+        //Debug.Log("Mosquito death:" + enemiesKilled);
+        
+        //if (enemiesKilled >= enemiesToSpawn)
+        //{
+        //    enemiesToSpawn *= 2; // Double the number of enemies to spawn
+        //    enemiesKilled = 0; // Reset the count
+
+        //    //StartCoroutine(SpawnEnemyTimer());
+        //}
+    }
+    //void UpdateLevelUI(int level)
+    //{
+    //    if (levelText != null)
+    //    {
+    //        levelText.text = "Level: " + level;
+    //    }
+    //}
 
     //public GameObject enemyPrefab;
     //public int maxEnemies = 4;
