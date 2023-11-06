@@ -7,8 +7,6 @@ using UnityEngine;
 public class BugSpray : MonoBehaviour
 {
     public GameObject spray;
-    //public Transform sprayPoint;
-    //public float sprayStrength = 2.0f;
 
     private SpriteRenderer spraySpriteRenderer;
     public SpriteRenderer sprayRenderer;
@@ -17,10 +15,16 @@ public class BugSpray : MonoBehaviour
     public float detectionDelay = 0.1f;
     public LayerMask enemyLayer;
 
-    private float lastDetectionTime;
+    //private float lastDetectionTime;
     private bool isSpraying = false;
+    private bool isRecharging = false;
+    private bool isButtonPressed = false; // Track button state
 
-    AudioSource _source; 
+    //private float currentSprayDuration = 0f; // Track spray duration???
+    public float maxSprayDuration = 5.0f; // Define the maximum spray duration
+
+
+    AudioSource _source;
     [SerializeField] AudioClip bugSpray;
 
     private void Start()
@@ -29,91 +33,195 @@ public class BugSpray : MonoBehaviour
         spraySpriteRenderer = sprayRenderer;
         spraySpriteRenderer.enabled = false;
 
-        _source = GetComponent<AudioSource>(); 
+        _source = GetComponent<AudioSource>();
 
         //sprayPoint = GameObject.Find("Spray").transform;
 
-        lastDetectionTime = Time.time;
+        //lastDetectionTime = Time.time;
     }
 
     private void Update()
     {
         if (GameBehaviour.Instance.GameState == GameBehaviour.State.Play)
         {
-            if (Input.GetMouseButtonDown(0))
+            // Check for spraying input
+            if ((Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space)) && !isRecharging)
+            {
+                isButtonPressed = true;
+                StartCoroutine(SprayDuration());
+            }
+            else if ((Input.GetMouseButtonUp(0) || Input.GetKeyUp(KeyCode.Space)))
+            {
+                isButtonPressed = false;
+            }
+
+            if (isButtonPressed && !isRecharging)
             {
                 isSpraying = true;
-                _source.PlayOneShot(bugSpray);
-                _source.loop = true;
             }
-            if (Input.GetMouseButtonUp(0))
+            else
             {
                 isSpraying = false;
-                spraySpriteRenderer.enabled = false;
+                sprayRenderer.enabled = false;
                 _source.Stop();
             }
 
-            if (isSpraying)
+            // Disabling the spray when not spraying
+            if (!isSpraying && sprayRenderer.enabled)
             {
-                spraySpriteRenderer.enabled = true;
-                if (Time.time - lastDetectionTime > detectionDelay)
-                {
-                    lastDetectionTime = Time.time;
-                    DetectAndDestroyEnemies();
-                }
+                sprayRenderer.enabled = false;
+                _source.Stop();
             }
         }
     }
 
-    //public void Spray()
-    //{
-    //    spraySpriteRenderer.enabled = true;
-
-    //    if (Time.time - lastDetectionTime > detectionDelay)
-    //    {
-    //        lastDetectionTime = Time.time;
-    //        DetectAndDestroyEnemies();
-    //    }
-    //    //GameObject bugspray = Instantiate(spray, sprayPoint.position, sprayPoint.rotation);
-    //    //spray.GetComponent<Rigidbody2D>().AddForce(sprayPoint.up * sprayStrength, ForceMode2D.Impulse);
-    //}
 
     private void DetectAndDestroyEnemies()
     {
-        Bounds detectionBounds = sprayDetectionArea.GetComponent < SpriteRenderer>().bounds;
+        Bounds detectionBounds = sprayDetectionArea.GetComponent<SpriteRenderer>().bounds;
 
         Collider2D[] hitEnemies = Physics2D.OverlapBoxAll(detectionBounds.center, detectionBounds.size, 0, enemyLayer);
 
         foreach (var enemyCollider in hitEnemies)
         {
-            Destroy(enemyCollider.gameObject);
+            enemyCollider.GetComponent<EnemyBehaviour>().TakeDamageFromBugSpray(5);
         }
+
     }
 
-    //private void DestroySelf()
-    //{
-    //    Invoke("Respawn", 5);
 
-    //}
 
-    //public void Respawn()
-    //{
-    //    GameObject enemyClone = (GameObject)Instantiate(enemyRef);
-    //    enemyClone.transform.position = transform.position;
-    //    Destroy(gameObject);
-    //}
-    //private void OnTriggerEnter2D(Collider2D other)
-    //{
+    private IEnumerator SprayDuration()
+    {
+        isSpraying = true;
+        sprayRenderer.enabled = true;
+        _source.Play();
 
-    //    //    if (other.CompareTag("Enemy"))
-    //    //    {
-    //    //        float distance = Vector2.Distance(transform.position, other.transform.position);
-    //    //        if (distance <= sprayRange)
-    //    //        {
-    //    //            Debug.Log("Ouch!");
-    //    //            Destroy(other.gameObject);
-    //    //        }
-    //}
-    //}
+        float startTime = Time.time; // Get the start time
+
+        while (isSpraying)
+        {
+            float elapsedTime = Time.time - startTime; // Calculate the elapsed time
+
+            if (elapsedTime >= maxSprayDuration)
+            {
+                isSpraying = false;
+            }
+            else
+            {
+                DetectAndDestroyEnemies();
+                yield return null;
+            }
+        }
+
+        isRecharging = true;
+        Debug.Log("Recharging...");
+        sprayRenderer.enabled = false;
+        _source.Stop();
+        yield return new WaitForSeconds(2.0f); // Recharge duration
+        isRecharging = false;
+    }
+
+
+
 
 }
+//using System.Collections;
+//using System.Collections.Generic;
+//using UnityEngine;
+
+//[RequireComponent(typeof(AudioSource))]
+//public class BugSpray : MonoBehaviour
+//{
+//    public GameObject spray;
+//    public SpriteRenderer sprayRenderer;
+//    public Transform sprayDetectionArea;
+//    public LayerMask enemyLayer;
+//    public float maxSprayDuration = 5.0f;
+//    public float minRechargeDuration = 1.0f;
+//    public float maxRechargeDuration = 5.0f;
+
+//    private bool isSpraying = false;
+//    private bool isButtonPressed = false;
+
+//    private AudioSource _source;
+//    private float currentSprayDuration = 0f;
+
+//    private void Start()
+//    {
+//        _source = GetComponent<AudioSource>();
+//        sprayRenderer.enabled = false;
+//    }
+
+//    private void Update()
+//    {
+//        if (GameBehaviour.Instance.GameState == GameBehaviour.State.Play)
+//        {
+//            if ((Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space)) && !isSpraying)
+//            {
+//                isButtonPressed = true;
+//                StartCoroutine(Spray());
+//            }
+//            else if ((Input.GetMouseButtonUp(0) || Input.GetKeyUp(KeyCode.Space)))
+//            {
+//                isButtonPressed = false;
+//            }
+
+//            if (isButtonPressed && !isSpraying)
+//            {
+//                StartSpraying();
+//            }
+//            else if (!isButtonPressed && isSpraying)
+//            {
+//                StopSpraying();
+//            }
+//        }
+//    }
+
+//    private void StartSpraying()
+//    {
+//        isSpraying = true;
+//        sprayRenderer.enabled = true;
+//        _source.Play();
+//    }
+
+//    private void StopSpraying()
+//    {
+//        isSpraying = false;
+//        sprayRenderer.enabled = false;
+//        _source.Stop();
+//        StartCoroutine(Recharge());
+//    }
+
+//    private IEnumerator Spray()
+//    {
+//        currentSprayDuration = 0f;
+
+//        while (currentSprayDuration < maxSprayDuration)
+//        {
+//            DetectAndDestroyEnemies();
+//            currentSprayDuration += Time.deltaTime;
+//            yield return null;
+//        }
+
+//        StopSpraying();
+//    }
+
+//    private IEnumerator Recharge()
+//    {
+//        float rechargeDuration = Mathf.Lerp(minRechargeDuration, maxRechargeDuration, currentSprayDuration / maxSprayDuration);
+//        yield return new WaitForSeconds(rechargeDuration);
+//    }
+
+//    private void DetectAndDestroyEnemies()
+//    {
+//        Bounds detectionBounds = sprayDetectionArea.GetComponent<SpriteRenderer>().bounds;
+
+//        Collider2D[] hitEnemies = Physics2D.OverlapBoxAll(detectionBounds.center, detectionBounds.size, 0, enemyLayer);
+
+//        foreach (var enemyCollider in hitEnemies)
+//        {
+//            enemyCollider.GetComponent<EnemyBehaviour>().TakeDamageFromBugSpray(5);
+//        }
+//    }
+//}

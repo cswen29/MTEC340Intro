@@ -2,22 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
+using UnityEngine.UI;
 
 public class PlayerBehaviour : MonoBehaviour
 {
-    public int _health, _maxHealth = 3;
+    public int _maxBloodLevel = 100;
+    public int _currentBloodLevel;
+
+    public BloodBar bloodBar;
     [SerializeField] float PlayerSpeed = 6.0f;
-    public float XLimit = 6.2f;
-    public float YLimit = 5.0f;
-    private int collisionCount = 0;
-    public int maxCollisions = 3; // Set to 3 for 3 collisions
+    public float XLimit = 60.0f;
+    public float YLimit = 45.0f;
     SpriteRenderer spriteRenderer;
 
     public Rigidbody2D rb;
     //private Material matRed;
     //private Material matDefault;
-
 
     Vector2 mousePosition;
 
@@ -28,37 +28,58 @@ public class PlayerBehaviour : MonoBehaviour
 
     private void Start()
     {
-        _health = _maxHealth;
-        //matRed = Resources.Load("RedFlash", typeof(Material)) as Material; 
-    }
+        _currentBloodLevel = _maxBloodLevel;
+        bloodBar.SetMaxBlood(_maxBloodLevel);
 
-
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (GameBehaviour.Instance.GameState == GameBehaviour.State.Play)
+        // Check if bloodBar is assigned before using it
+        if (bloodBar != null)
         {
-
-            if (collision.gameObject.CompareTag("Enemy"))
-            {
-                collisionCount++;
-                //spriteRenderer.material = matRed;
-                if (collisionCount >= maxCollisions)
-                {
-                    PlayerDestruction();
-                }
-            }
+            bloodBar.SetMaxBlood(_maxBloodLevel);
         }
+        else
+        {
+            Debug.LogError("BloodBar is not assigned to PlayerBehaviour!");
+        }
+    
     }
 
-    public void PlayerDestruction()
+    public void TakeDamage(int damage)
     {
-        _health--;
-        if (_health <= 0)
+        Debug.Log("Ouch, Mosquito bit me!");
+        _currentBloodLevel -= damage;
+
+        bloodBar.SetBlood(_currentBloodLevel);
+
+        if (_currentBloodLevel <= 0)
         {
+            GameObject cameraObject = GameObject.FindGameObjectWithTag("MainCamera");
+
             Destroy(gameObject);
-            SceneManager.LoadScene("EndScene");
+
+            if (cameraObject != null)
+            {
+                Destroy(cameraObject);
+            }
+
+            GameBehaviour.Instance.GameOver();
+        }
+    }
+
+    public void ToggleIncreaseBlood(int extraBloodAmount)
+    {
+        if (_currentBloodLevel + extraBloodAmount <= _maxBloodLevel)
+        {
+            _currentBloodLevel += extraBloodAmount;
+        }
+        else
+        {
+            int difference = _currentBloodLevel + extraBloodAmount - _maxBloodLevel;
+
+            // Deduct the extra from current blood level teehee
+            _currentBloodLevel -= difference;
         }
 
+        bloodBar.SetBlood(_currentBloodLevel);
     }
 
     void Update()
