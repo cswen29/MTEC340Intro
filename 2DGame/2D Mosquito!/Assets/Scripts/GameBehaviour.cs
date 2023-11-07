@@ -30,6 +30,8 @@ public class GameBehaviour : MonoBehaviour
 
     public void GameOver()
     {
+        // Save the achieved level to PlayerPrefs
+        PlayerPrefs.SetInt("AchievedLevel", level);
         SceneManager.LoadScene("EndScene");
     }
 

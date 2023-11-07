@@ -13,7 +13,7 @@ public class EnemyBehaviour : MonoBehaviour
     Transform _target;
     Rigidbody2D _rb;
     Vector2 _moveDirection;
-    private EnemySpawns _enemySpawns;
+    public EnemySpawns _enemySpawns;
     //public GameBehaviour gameBehaviour;
 
     private void Awake()
@@ -30,35 +30,51 @@ public class EnemyBehaviour : MonoBehaviour
         // Find and set the reference to the EnemySpawns components in the scene
         EnemySpawns[] enemySpawns = FindObjectsOfType<EnemySpawns>();
 
-        // Assign the correct EnemySpawns to _enemySpawns based on the GameObject name or other criteria
-        foreach (EnemySpawns enemySpawn in enemySpawns)
+        if (enemySpawns.Length > 0)
         {
-            if (enemySpawn.gameObject.name == "Spawnpoint_Mosquito")
-            {
-                _enemySpawns = enemySpawn;
-            }
-            else if (enemySpawn.gameObject.name == "Spawnpoint_Mosquito1")
-            {
-                _enemySpawns = enemySpawn;
-            }
-            else if (enemySpawn.gameObject.name == "Spawnpoint_Mosquito2")
-            {
-                _enemySpawns = enemySpawn;
-            }
+            _enemySpawns = enemySpawns[0]; // Assign the first found EnemySpawns
+            SetEnemySpawnsForAll(_enemySpawns);
         }
-
-        if (_enemySpawns == null)
+        else
         {
             Debug.LogError("No EnemySpawns found!");
         }
 
-        SetEnemySpawns(_enemySpawns);
+        //// Assign the correct EnemySpawns to _enemySpawns based on the GameObject name or other criteria
+        //foreach (EnemySpawns enemySpawn in enemySpawns)
+        //{
+        //    if (enemySpawn.gameObject.name == "Spawnpoint_Mosquito")
+        //    {
+        //        _enemySpawns = enemySpawn;
+        //    }
+        //    if (enemySpawn.gameObject.name == "Spawnpoint_Mosquito1")
+        //    {
+        //        _enemySpawns = enemySpawn;
+        //    }
+        //    if (enemySpawn.gameObject.name == "Spawnpoint_Mosquito2")
+        //    {
+        //        _enemySpawns = enemySpawn;
+        //    }
+        //}
+
+        //if (_enemySpawns == null)
+        //{
+        //    Debug.LogError("No EnemySpawns found!");
+        //}
+
+        //SetEnemySpawns(_enemySpawns);
     }
 
-    public void SetEnemySpawns(EnemySpawns enemySpawns)
+    public void SetEnemySpawnsForAll(EnemySpawns enemySpawns)
     {
-        _enemySpawns = enemySpawns;
+        EnemySpawns[] allEnemySpawns = FindObjectsOfType<EnemySpawns>();
+
+        foreach (EnemySpawns enemySpawn in allEnemySpawns)
+        {
+            enemySpawn.SetEnemySpawns(enemySpawns);
+        }
     }
+
 
     void Update()
     {

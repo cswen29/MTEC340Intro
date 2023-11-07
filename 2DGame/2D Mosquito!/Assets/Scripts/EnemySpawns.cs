@@ -8,6 +8,7 @@ public class EnemySpawns : MonoBehaviour
     [SerializeField] GameObject enemyPrefab;
     [SerializeField] float spawnpointY;
     //[SerializeField] TextMeshProUGUI levelText;
+    private EnemySpawns _enemySpawns; // Declaration
 
 
     //private float timer;
@@ -24,6 +25,11 @@ public class EnemySpawns : MonoBehaviour
         originalEnemyPrefab.SetActive(false); // Disable the original prefab
 
         StartCoroutine("SpawnEnemyTimer");
+    }
+
+    public void SetEnemySpawns(EnemySpawns enemySpawns)
+    {
+        _enemySpawns = enemySpawns;
     }
 
     void SpawnEnemy()
@@ -81,22 +87,7 @@ public class EnemySpawns : MonoBehaviour
     public void EnemyKilled()
     {
         enemiesKilled++;
-        //if (enemiesKilled % 5 == 0)
-        //{
-        //    // Increment the level indicator every 5 enemies killed
-        //    int level = enemiesKilled / 5; // Assuming each 5 kills increases level by 1
-        //    UpdateLevelUI(level);
-        //}
 
-        //Debug.Log("Mosquito death:" + enemiesKilled);
-        
-        //if (enemiesKilled >= enemiesToSpawn)
-        //{
-        //    enemiesToSpawn *= 2; // Double the number of enemies to spawn
-        //    enemiesKilled = 0; // Reset the count
-
-        //    //StartCoroutine(SpawnEnemyTimer());
-        //}
     }
     //void UpdateLevelUI(int level)
     //{

@@ -15,6 +15,15 @@ public class PlayerBehaviour : MonoBehaviour
     public float YLimit = 45.0f;
     SpriteRenderer spriteRenderer;
 
+
+    //Power Up Speed Boost
+    private bool isSpeedBoostActive = false;
+    private float normalSpeed;
+    private float speedBoostAmount = 6.0f; // Increase speed
+
+    //private float speedBoostDuration = 3.0f; // Duration of speed boost in seconds
+
+
     public Rigidbody2D rb;
     //private Material matRed;
     //private Material matDefault;
@@ -30,6 +39,7 @@ public class PlayerBehaviour : MonoBehaviour
     {
         _currentBloodLevel = _maxBloodLevel;
         bloodBar.SetMaxBlood(_maxBloodLevel);
+        normalSpeed = PlayerSpeed;
 
         // Check if bloodBar is assigned before using it
         if (bloodBar != null)
@@ -64,6 +74,8 @@ public class PlayerBehaviour : MonoBehaviour
             GameBehaviour.Instance.GameOver();
         }
     }
+
+
 
     public void ToggleIncreaseBlood(int extraBloodAmount)
     {
@@ -107,6 +119,24 @@ public class PlayerBehaviour : MonoBehaviour
 
             mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
+        }
+    }
+
+    public IEnumerator ActivateSpeedBoost()
+    {
+        if (!isSpeedBoostActive)
+        {
+            isSpeedBoostActive = true;
+            normalSpeed = PlayerSpeed;
+            Debug.Log("This is the " + normalSpeed + " and " + PlayerSpeed);
+            PlayerSpeed += speedBoostAmount; // Increase player's speed
+
+            yield return new WaitForSeconds(2); 
+            
+            PlayerSpeed = normalSpeed; // Revert player's speed back to normal
+            isSpeedBoostActive = false; // Reset the flag
+            Debug.Log("Back to Normal Speed: " + PlayerSpeed);
+            
         }
     }
 

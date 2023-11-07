@@ -316,7 +316,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'You killed: 4 mosquitos and restore the balance of the world'
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1112,6 +1112,7 @@ MonoBehaviour:
   mainMenuButton: {fileID: 1747920195}
   playAgainButton: {fileID: 1351904036}
   exitButton: {fileID: 1083144858}
+  endLevelText: {fileID: 66726101}
 --- !u!4 &1126485349
 Transform:
   m_ObjectHideFlags: 0
