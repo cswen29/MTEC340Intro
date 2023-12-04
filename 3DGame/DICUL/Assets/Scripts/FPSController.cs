@@ -36,7 +36,6 @@ public class FPSController : MonoBehaviour
     //[SerializeField] float stepHeight = 0.3f;
     //[SerializeField] float stepSmooth = 0.1f;
 
-
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
@@ -152,5 +151,5 @@ public class FPSController : MonoBehaviour
 
     //    }
 
-    
+
 }

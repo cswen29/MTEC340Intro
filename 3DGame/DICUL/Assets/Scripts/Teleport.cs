@@ -8,10 +8,14 @@ public class Teleport : MonoBehaviour
     public GameObject playerGO;
     [SerializeField] private float teleportationTime;
 
+    [Header("Teleport Particle")]
+    [SerializeField] ParticleSystem teleportParticle = null;
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
+            TeleportParticles();
             Invoke(nameof(Teleportation), teleportationTime);
         }
     }
@@ -24,4 +28,13 @@ public class Teleport : MonoBehaviour
         playerGO.SetActive(true);
     }
 
+    public void TeleportParticles()
+    {
+        //Play teleporting particles
+        teleportParticle.Play();
+
+        //Play teleporting sound 
+    }
+
 }
+
