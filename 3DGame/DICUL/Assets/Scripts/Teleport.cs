@@ -15,6 +15,7 @@ public class Teleport : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            Debug.Log(" Player Detected");
             TeleportParticles();
             Invoke(nameof(Teleportation), teleportationTime);
         }
